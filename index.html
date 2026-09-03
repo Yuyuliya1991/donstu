@@ -218,7 +218,7 @@
                 const end = new Date(currentMonday);
                 end.setDate(end.getDate() + 6);
                 document.getElementById('weekLabel').textContent =
-                    `Неделя ${formatDateShort(currentMonday)} – ${formatDateShort(end)}`;
+                    `${formatDateShort(currentMonday)} – ${formatDateShort(end)}`;
             }
 
             renderDayButtons();
