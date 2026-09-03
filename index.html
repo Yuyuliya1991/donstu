@@ -39,21 +39,22 @@
         }
         .lesson-row:last-child { border-bottom: none; }
 
+        /* ===== ИСПРАВЛЕННЫЙ БЛОК С АУДИТОРИЯМИ ===== */
         .lesson-room-wrapper {
             display: flex;
             align-items: center;
             gap: 6px;
             min-width: 60px;
             flex-shrink: 0;
-            flex-wrap: wrap;
+            flex-wrap: nowrap; /* ← запрещаем перенос внутри блока */
         }
+
         .lesson-room {
             color: #ff6b6b;
             font-weight: 600;
             font-size: 16px;
         }
 
-        /* Кнопка "Ауд. ▼" — цвет как у аудитории */
         .room-toggle {
             display: inline-flex;
             align-items: center;
@@ -87,15 +88,16 @@
             transform: rotate(180deg);
         }
 
-        /* Выпадающий список */
+        /* ===== ИСПРАВЛЕННЫЙ ВЫПАДАЮЩИЙ СПИСОК ===== */
         .room-dropdown {
             display: none;
-            width: 100%;
-            padding: 8px 0 4px 12px;
+            width: auto; /* ← не растягивается на всю ширину */
+            padding: 8px 12px 4px 12px;
             margin-top: 4px;
             border-left: 2px solid rgba(255,107,107,0.15);
             background: rgba(255,255,255,0.02);
             border-radius: 0 0 8px 8px;
+            white-space: nowrap; /* ← запрещаем перенос текста внутри списка */
         }
         .room-dropdown.open {
             display: block;
@@ -106,6 +108,7 @@
             gap: 10px;
             padding: 4px 0;
             border-bottom: 1px solid rgba(255,255,255,0.03);
+            white-space: nowrap; /* ← запрещаем перенос в каждом элементе */
         }
         .room-dropdown .room-item:last-child {
             border-bottom: none;
