@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ДГТУ Расписание</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 100%); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: flex-start; }
+        .container { max-width: 1100px; width: 100%; background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border-radius: 32px; padding: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); margin-top: 10px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid rgba(255,200,0,0.2); padding-bottom: 16px; }
+        .header h1 { color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; }
+        .header h1 span { color: #ffc800; }
+
+        .week-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 6px 0 14px 0; flex-wrap: nowrap; }
+        .week-nav button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #ffffff; padding: 6px 18px; border-radius: 30px; cursor: pointer; font-size: 14px; font-weight: 500; transition: background 0.2s; white-space: nowrap; }
+        .week-nav button:hover { background: rgba(255,200,0,0.15); }
+        .week-label { color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500; min-width: 150px; text-align: center; white-space: nowrap; }
+
+        .days-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 6px 0 16px 0; max-width: 500px; margin: 0 auto; }
+        .day-btn { padding: 10px 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 40px; color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; text-align: center; white-space: nowrap; }
+        .day-btn:hover { background: rgba(255,200,0,0.12); color: #fff; }
+        .day-btn.active { background: #ffc800; color: #0a1628; border-color: #ffc800; box-shadow: 0 4px 20px rgba(255,200,0,0.25); }
+        .day-btn .day-date { display: block; font-size: 11px; font-weight: 400; opacity: 0.5; margin-top: 2px; }
+        .day-btn.active .day-date { opacity: 0.7; }
+
+        .girls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-top: 6px; }
+        .girl-card { background: rgba(255,255,255,0.04); border-radius: 24px; padding: 18px 20px 20px; border: 1px solid rgba(255,255,255,0.06); transition: border-color 0.2s; }
+        .girl-card:hover { border-color: rgba(255,200,0,0.15); }
+        .girl-name { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+
+        .lesson-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .lesson-row:last-child { border-bottom: none; }
+
+        .lesson-room { color: #ff6b6b; font-weight: 600; font-size: 16px; min-width: 60px; flex-shrink: 0; }
+        .lesson-info { flex: 1; min-width: 0; padding: 0 14px; }
+        .lesson-name { color: rgba(255,255,255,0.85); font-size: 16px; font-weight: 500; word-break: break-word; }
+        .lesson-time { color: #ffd93d; font-weight: 700; font-size: 17px; white-space: nowrap; flex-shrink: 0; text-shadow: 0 0 20px rgba(255, 217, 61, 0.25); letter-spacing: 0.3px; }
+
+        .girl-empty { color: rgba(255,255,255,0.25); text-align: center; padding: 20px 0; font-size: 14px; }
+        .girl-loader { color: rgba(255,255,255,0.4); text-align: center; padding: 20px 0; font-size: 14px; }
+        .girl-error { color: #ff6b6b; text-align: center; padding: 14px 0; font-size: 13px; background: rgba(255,0,0,0.06); border-radius: 12px; }
+
+        .footer { text-align: center; margin-top: 30px; color: rgba(255,255,255,0.15); font-size: 12px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 18px; }
+
+        @media (max-width: 600px) {
+            .container { padding: 16px; }
+            .header h1 { font-size: 22px; }
+            .girls-grid { grid-template-columns: 1fr; }
+            .lesson-row { flex-wrap: wrap; gap: 4px; padding: 8px 0; }
+            .lesson-room { min-width: 50px; font-size: 14px; }
+            .lesson-time { font-size: 15px; }
+            .lesson-name { font-size: 14px; }
+            .days-nav { grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 100%; }
+            .day-btn { font-size: 13px; padding: 8px 4px; border-radius: 30px; }
+            .day-btn .day-date { font-size: 10px; }
+            .week-nav { gap: 8px; }
+            .week-nav button { font-size: 12px; padding: 4px 12px; }
+            .week-label { font-size: 12px; min-width: 100px; }
+        }
+        @media (max-width: 400px) {
+            .days-nav { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+            .day-btn { font-size: 11px; padding: 6px 2px; border-radius: 20px; }
+            .day-btn .day-date { font-size: 9px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ДГТУ <span>Расписание</span></h1>
+        </div>
+
+        <div class="week-nav">
+            <button id="prevWeek">◀ Пред. неделя</button>
+            <span class="week-label" id="weekLabel">Загрузка...</span>
+            <button id="nextWeek">След. неделя ▶</button>
+        </div>
+
+        <div class="days-nav" id="daysNav"></div>
+
+        <div class="girls-grid" id="girlsGrid"></div>
+
+        <div class="footer">Данные загружены с API ДГТУ</div>
+    </div>
+
+    <script>
+        // ===================================================
+        // ВСЕ ПОДРУГИ
+        // ===================================================
+        const GIRLS = [
+            { name: 'Юля', groupId: 73351 },
+            { name: 'Маша', groupId: 73309 },
+            { name: 'Полина', groupId: 73460 },
+            { name: 'Вероника', groupId: 73310 },
+            { name: 'Злата', groupId: 73377 },
+            { name: 'Ульяна', groupId: 73328 }
+        ];
+
+        let currentDay = 3;
+        let currentMonday = null;
+        let allData = {};
+
+        const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+
+        // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
+        function getMonday(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            d.setDate(diff);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function formatDate(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatDateShort(d) {
+            return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+        }
+
+        function addWeeks(date, weeks) {
+            const d = new Date(date);
+            d.setDate(d.getDate() + weeks * 7);
+            return d;
+        }
+
+        // ---------- ЗАГРУЗКА РАСПИСАНИЯ ----------
+        async function fetchSchedule(groupId, monday) {
+            const url = `https://edu.donstu.ru/api/Rasp?idGroup=${groupId}&sdate=${formatDate(monday)}`;
+            try {
+                const resp = await fetch(url);
+                if (!resp.ok) return null;
+                return await resp.json();
+            } catch {
+                return null;
+            }
+        }
+
+        // ---------- ПАРСИНГ С "И ДР." ДЛЯ ВСЕХ СЛУЧАЕВ ----------
+        function parseSchedule(apiData, targetDay) {
+            if (!apiData || apiData.state !== 1) return [];
+
+            const raspArray = apiData.data?.rasp || [];
+            const rawLessons = [];
+
+            raspArray.forEach(item => {
+                if (item.деньНедели === targetDay) {
+                    let name = item.дисциплина || 'Без названия';
+                    name = name.replace(/^(лек|пр|лаб)\s*/i, '').trim();
+                    name = name.replace(/,\s*п\/г\s*\d+/i, '').trim();
+
+                    rawLessons.push({
+                        time: `${item.начало} – ${item.конец}`,
+                        start: item.начало,
+                        end: item.конец,
+                        name: name,
+                        room: item.аудитория || ''
+                    });
+                }
+            });
+
+            rawLessons.sort((a, b) => a.start.localeCompare(b.start));
+
+            const merged = [];
+            let current = null;
+
+            rawLessons.forEach(lesson => {
+                const key = lesson.start + lesson.end + lesson.name;
+                if (!current || current.key !== key) {
+                    current = {
+                        key: key,
+                        time: lesson.time,
+                        start: lesson.start,
+                        end: lesson.end,
+                        name: lesson.name,
+                        rooms: [lesson.room]
+                    };
+                    merged.push(current);
+                } else {
+                    if (lesson.room && !current.rooms.includes(lesson.room)) {
+                        current.rooms.push(lesson.room);
+                    }
+                }
+            });
+
+            // ====== ЕДИНОЕ ПРАВИЛО: если аудиторий несколько → первая + " и др." ======
+            return merged.map(item => {
+                let roomText = '—';
+                const rooms = item.rooms.filter(r => r && r.trim() !== '');
+                if (rooms.length === 0) {
+                    roomText = '—';
+                } else if (rooms.length === 1) {
+                    roomText = rooms[0];
+                } else {
+                    // ДВЕ И БОЛЕЕ → первая + " и др."
+                    roomText = rooms[0] + ' и др.';
+                }
+
+                return {
+                    time: item.time,
+                    start: item.start,
+                    end: item.end,
+                    name: item.name,
+                    room: roomText
+                };
+            });
+        }
+
+        // ---------- ОТОБРАЖЕНИЕ ----------
+        function renderAll() {
+            if (currentMonday) {
+                const end = new Date(currentMonday);
+                end.setDate(end.getDate() + 6);
+                document.getElementById('weekLabel').textContent =
+                    `Неделя ${formatDateShort(currentMonday)} – ${formatDateShort(end)}`;
+            }
+
+            renderDayButtons();
+
+            const grid = document.getElementById('girlsGrid');
+            let html = '';
+
+            GIRLS.forEach(girl => {
+                const lessons = allData[girl.groupId] || [];
+
+                let scheduleHtml = '';
+                if (lessons.length === 0) {
+                    scheduleHtml = `<div class="girl-empty">🎉 В этот день пар нет</div>`;
+                } else {
+                    lessons.forEach(lesson => {
+                        scheduleHtml += `
+                            <div class="lesson-row">
+                                <div class="lesson-room">${lesson.room}</div>
+                                <div class="lesson-info">
+                                    <div class="lesson-name">${lesson.name}</div>
+                                </div>
+                                <div class="lesson-time">${lesson.time}</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                html += `
+                    <div class="girl-card">
+                        <div class="girl-name">${girl.name}</div>
+                        <div class="girl-schedule">${scheduleHtml}</div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        // ---------- КНОПКИ ДНЕЙ ----------
+        function renderDayButtons() {
+            const nav = document.getElementById('daysNav');
+            nav.innerHTML = '';
+
+            for (let i = 0; i < 6; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'day-btn' + (i + 1 === currentDay ? ' active' : '');
+                btn.dataset.day = i + 1;
+
+                const targetDate = new Date(currentMonday);
+                targetDate.setDate(currentMonday.getDate() + i);
+                const dateStr = formatDateShort(targetDate);
+
+                btn.innerHTML = `${dayNames[i]} <span class="day-date">${dateStr}</span>`;
+
+                btn.addEventListener('click', () => {
+                    setDay(i + 1);
+                });
+
+                nav.appendChild(btn);
+            }
+        }
+
+        // ---------- ЗАГРУЗКА ДАННЫХ ----------
+        async function loadAllSchedules() {
+            if (!currentMonday) {
+                currentMonday = getMonday(new Date());
+            }
+
+            allData = {};
+            GIRLS.forEach(g => { allData[g.groupId] = null; });
+
+            const promises = GIRLS.map(async (girl) => {
+                const data = await fetchSchedule(girl.groupId, currentMonday);
+                if (data) {
+                    allData[girl.groupId] = parseSchedule(data, currentDay);
+                } else {
+                    allData[girl.groupId] = [];
+                }
+            });
+
+            await Promise.all(promises);
+            renderAll();
+        }
+
+        // ---------- ПЕРЕКЛЮЧЕНИЕ ----------
+        function setDay(day) {
+            if (day < 1 || day > 6) return;
+            currentDay = day;
+            loadAllSchedules();
+        }
+
+        function setWeekOffset(weeks) {
+            if (!currentMonday) {
+                currentMonday = getMonday(new Date());
+            }
+            currentMonday = addWeeks(currentMonday, weeks);
+            loadAllSchedules();
+        }
+
+        // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+        function init() {
+            const today = new Date().getDay();
+            if (today >= 1 && today <= 6) {
+                currentDay = today;
+            } else {
+                currentDay = 3;
+            }
+
+            currentMonday = getMonday(new Date());
+
+            document.getElementById('prevWeek').addEventListener('click', () => setWeekOffset(-1));
+            document.getElementById('nextWeek').addEventListener('click', () => setWeekOffset(1));
+
+            loadAllSchedules();
+            setInterval(loadAllSchedules, 10 * 60 * 1000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
