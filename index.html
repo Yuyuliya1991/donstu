@@ -39,14 +39,13 @@
         }
         .lesson-row:last-child { border-bottom: none; }
 
-        /* ===== ИСПРАВЛЕННЫЙ БЛОК С АУДИТОРИЯМИ ===== */
         .lesson-room-wrapper {
             display: flex;
             align-items: center;
             gap: 6px;
             min-width: 60px;
             flex-shrink: 0;
-            flex-wrap: nowrap; /* ← запрещаем перенос внутри блока */
+            flex-wrap: nowrap;
         }
 
         .lesson-room {
@@ -88,44 +87,55 @@
             transform: rotate(180deg);
         }
 
-        /* ===== ИСПРАВЛЕННЫЙ ВЫПАДАЮЩИЙ СПИСОК ===== */
+        /* ===== ВЫПАДАЮЩИЙ СПИСОК (в строчку) ===== */
         .room-dropdown {
             display: none;
-            width: auto; /* ← не растягивается на всю ширину */
-            padding: 8px 12px 4px 12px;
+            width: 100%;
+            padding: 6px 0 2px 12px;
             margin-top: 4px;
-            border-left: 2px solid rgba(255,107,107,0.15);
+            border-left: 2px solid rgba(255,107,107,0.1);
             background: rgba(255,255,255,0.02);
             border-radius: 0 0 8px 8px;
-            white-space: nowrap; /* ← запрещаем перенос текста внутри списка */
+            white-space: nowrap;
         }
         .room-dropdown.open {
-            display: block;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
         }
         .room-dropdown .room-item {
-            display: flex;
+            display: inline-flex;
             align-items: baseline;
-            gap: 10px;
+            gap: 6px;
             padding: 4px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            white-space: nowrap; /* ← запрещаем перенос в каждом элементе */
-        }
-        .room-dropdown .room-item:last-child {
+            white-space: nowrap;
             border-bottom: none;
         }
         .room-dropdown .room-item .r-aud {
             color: #ff6b6b;
             font-size: 14px;
             font-weight: 500;
-            min-width: 60px;
         }
         .room-dropdown .room-item .r-subgroup {
             color: rgba(255,255,255,0.35);
             font-size: 12px;
         }
 
-        .lesson-info { flex: 1; min-width: 0; padding: 0 14px; }
-        .lesson-name { color: rgba(255,255,255,0.85); font-size: 16px; font-weight: 500; word-break: break-word; }
+        /* ===== ИСПРАВЛЕННЫЙ .lesson-name ===== */
+        .lesson-info { 
+            flex: 1; 
+            min-width: 0; 
+            padding: 0 14px; 
+        }
+        .lesson-name { 
+            color: rgba(255,255,255,0.85); 
+            font-size: 16px; 
+            font-weight: 500; 
+            word-break: normal; 
+            white-space: normal; 
+            overflow-wrap: break-word; 
+        }
+
         .lesson-time { color: #ffd93d; font-weight: 700; font-size: 17px; white-space: nowrap; flex-shrink: 0; text-shadow: 0 0 20px rgba(255, 217, 61, 0.25); letter-spacing: 0.3px; }
 
         .girl-empty { color: rgba(255,255,255,0.25); text-align: center; padding: 20px 0; font-size: 14px; }
@@ -155,7 +165,6 @@
             .days-nav { grid-template-columns: repeat(3, 1fr); gap: 4px; }
             .day-btn { font-size: 11px; padding: 6px 2px; border-radius: 20px; }
             .day-btn .day-date { font-size: 9px; }
-            .room-dropdown .room-item .r-aud { font-size: 13px; min-width: 50px; }
         }
     </style>
 </head>
