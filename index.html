@@ -29,6 +29,7 @@
         .girl-card:hover { border-color: rgba(255,200,0,0.15); }
         .girl-name { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
 
+        /* ===== ОСНОВНАЯ СТРОКА ПАРЫ ===== */
         .lesson-row {
             display: flex;
             justify-content: space-between;
@@ -87,35 +88,34 @@
             transform: rotate(180deg);
         }
 
-        /* ===== ИСПРАВЛЕННЫЙ ВЫПАДАЮЩИЙ СПИСОК ===== */
+        /* ===== ВЕРТИКАЛЬНЫЙ СПИСОК АУДИТОРИЙ ===== */
         .room-dropdown {
             display: none;
             width: 100%;
-            padding: 6px 0 2px 12px;
+            padding: 8px 0 4px 12px;
             margin-top: 4px;
-            border-left: 2px solid rgba(255,107,107,0.1);
+            border-left: 2px solid rgba(255,107,107,0.15);
             background: rgba(255,255,255,0.02);
             border-radius: 0 0 8px 8px;
         }
         .room-dropdown.open {
-            display: flex;
-            flex-wrap: wrap; /* ← перенос на новую строку */
-            align-items: flex-start;
-            gap: 4px 16px;
+            display: block; /* ← вертикальный список */
         }
         .room-dropdown .room-item {
-            display: inline-flex;
+            display: flex;
             align-items: baseline;
-            gap: 6px;
+            gap: 8px;
             padding: 4px 0;
-            white-space: nowrap;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .room-dropdown .room-item:last-child {
             border-bottom: none;
-            flex-shrink: 0;
         }
         .room-dropdown .room-item .r-aud {
             color: #ff6b6b;
             font-size: 14px;
             font-weight: 500;
+            min-width: 60px;
         }
         .room-dropdown .room-item .r-subgroup {
             color: rgba(255,255,255,0.35);
@@ -162,9 +162,8 @@
             .lesson-time { font-size: 15px; }
             .lesson-name { font-size: 14px; }
             .room-toggle { font-size: 12px; padding: 0 8px; line-height: 22px; }
-            .room-dropdown { padding: 4px 0 2px 8px; }
-            .room-dropdown.open { gap: 4px 12px; }
-            .room-dropdown .room-item .r-aud { font-size: 13px; }
+            .room-dropdown { padding: 6px 0 2px 8px; }
+            .room-dropdown .room-item .r-aud { font-size: 13px; min-width: 50px; }
             .room-dropdown .room-item .r-subgroup { font-size: 11px; }
             .days-nav { grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 100%; }
             .day-btn { font-size: 13px; padding: 8px 4px; border-radius: 30px; }
@@ -177,7 +176,7 @@
             .days-nav { grid-template-columns: repeat(3, 1fr); gap: 4px; }
             .day-btn { font-size: 11px; padding: 6px 2px; border-radius: 20px; }
             .day-btn .day-date { font-size: 9px; }
-            .room-dropdown .room-item .r-aud { font-size: 12px; }
+            .room-dropdown .room-item .r-aud { font-size: 12px; min-width: 40px; }
             .room-dropdown .room-item .r-subgroup { font-size: 10px; }
         }
     </style>
