@@ -29,13 +29,14 @@
         .girl-card:hover { border-color: rgba(255,200,0,0.15); }
         .girl-name { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
 
-        /* ===== ИСПРАВЛЕННАЯ ВЁРСТКА ===== */
+        /* ===== ОСНОВНАЯ СТРОКА (горизонтально) ===== */
         .lesson-row {
             display: flex;
-            flex-direction: column; /* ← элементы в столбик */
-            align-items: stretch;
+            justify-content: space-between;
+            align-items: center;
             padding: 10px 0;
             border-bottom: 1px solid rgba(255,255,255,0.04);
+            flex-wrap: wrap;
         }
         .lesson-row:last-child { border-bottom: none; }
 
@@ -46,7 +47,6 @@
             min-width: 60px;
             flex-shrink: 0;
             flex-wrap: wrap;
-            margin-bottom: 4px; /* ← отступ от названия */
         }
 
         .lesson-room {
@@ -88,6 +88,7 @@
             transform: rotate(180deg);
         }
 
+        /* ===== ВЫПАДАЮЩИЙ СПИСОК (появляется под строкой) ===== */
         .room-dropdown {
             display: none;
             width: 100%;
@@ -125,8 +126,7 @@
         .lesson-info {
             flex: 1;
             min-width: 0;
-            padding: 0;
-            margin-bottom: 2px; /* ← отступ от времени */
+            padding: 0 14px;
         }
         .lesson-name {
             color: rgba(255,255,255,0.85);
@@ -145,7 +145,6 @@
             flex-shrink: 0;
             text-shadow: 0 0 20px rgba(255, 217, 61, 0.25);
             letter-spacing: 0.3px;
-            padding-left: 0;
         }
 
         .girl-empty { color: rgba(255,255,255,0.25); text-align: center; padding: 20px 0; font-size: 14px; }
@@ -158,8 +157,8 @@
             .container { padding: 16px; }
             .header h1 { font-size: 22px; }
             .girls-grid { grid-template-columns: 1fr; }
-            .lesson-row { padding: 8px 0; }
-            .lesson-room-wrapper { min-width: 50px; margin-bottom: 2px; }
+            .lesson-row { gap: 4px; padding: 8px 0; }
+            .lesson-room-wrapper { min-width: 50px; }
             .lesson-room { font-size: 14px; }
             .lesson-time { font-size: 15px; }
             .lesson-name { font-size: 14px; }
@@ -354,6 +353,7 @@
                             </div>
                         `).join('');
 
+                        // ВСЁ В ОДНУ СТРОКУ (горизонтально)
                         scheduleHtml += `
                             <div class="lesson-row">
                                 <div class="lesson-room-wrapper">
