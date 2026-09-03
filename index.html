@@ -29,14 +29,20 @@
         .girl-card:hover { border-color: rgba(255,200,0,0.15); }
         .girl-name { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
 
-        .lesson-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .lesson-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            flex-wrap: wrap;
+        }
         .lesson-row:last-child { border-bottom: none; }
 
-        /* Блок с аудиторией — гибкий */
         .lesson-room-wrapper {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             min-width: 60px;
             flex-shrink: 0;
             flex-wrap: wrap;
@@ -46,44 +52,73 @@
             font-weight: 600;
             font-size: 16px;
         }
-        /* Кнопка "ещё N" */
+
+        /* Кнопка "Ауд. ▼" — цвет как у аудитории */
         .room-toggle {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.5);
-            font-size: 11px;
-            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: transparent;
+            border: 1px solid rgba(255,107,107,0.2);
+            color: #ff6b6b;
+            font-size: 13px;
+            padding: 0 10px;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
-            line-height: 20px;
+            line-height: 24px;
+            font-weight: 600;
         }
         .room-toggle:hover {
-            background: rgba(255,200,0,0.15);
-            color: #ffc800;
+            background: rgba(255,107,107,0.1);
+            border-color: rgba(255,107,107,0.4);
         }
         .room-toggle.active {
-            background: rgba(255,200,0,0.2);
-            color: #ffc800;
+            background: rgba(255,107,107,0.15);
+            border-color: #ff6b6b;
+        }
+        .room-toggle .arrow {
+            display: inline-block;
+            transition: transform 0.25s ease;
+            font-size: 10px;
+        }
+        .room-toggle.active .arrow {
+            transform: rotate(180deg);
         }
 
-        /* Скрытый список аудиторий */
-        .room-list {
+        /* Выпадающий список */
+        .room-dropdown {
             display: none;
             width: 100%;
-            padding: 6px 0 2px 12px;
-            color: rgba(255,255,255,0.4);
+            padding: 8px 0 4px 12px;
+            margin-top: 4px;
+            border-left: 2px solid rgba(255,107,107,0.15);
+            background: rgba(255,255,255,0.02);
+            border-radius: 0 0 8px 8px;
+        }
+        .room-dropdown.open {
+            display: block;
+        }
+        .room-dropdown .room-item {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .room-dropdown .room-item:last-child {
+            border-bottom: none;
+        }
+        .room-dropdown .room-item .r-aud {
+            color: #ff6b6b;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 60px;
+        }
+        .room-dropdown .room-item .r-subgroup {
+            color: rgba(255,255,255,0.35);
             font-size: 12px;
-            border-left: 1px solid rgba(255,255,255,0.05);
-            margin-top: 2px;
-        }
-        .room-list.open {
-            display: block;
-        }
-        .room-list span {
-            display: block;
-            padding: 2px 0;
         }
 
         .lesson-info { flex: 1; min-width: 0; padding: 0 14px; }
@@ -100,11 +135,12 @@
             .container { padding: 16px; }
             .header h1 { font-size: 22px; }
             .girls-grid { grid-template-columns: 1fr; }
-            .lesson-row { flex-wrap: wrap; gap: 4px; padding: 8px 0; }
+            .lesson-row { gap: 4px; padding: 8px 0; }
             .lesson-room-wrapper { min-width: 50px; }
             .lesson-room { font-size: 14px; }
             .lesson-time { font-size: 15px; }
             .lesson-name { font-size: 14px; }
+            .room-toggle { font-size: 12px; padding: 0 8px; line-height: 22px; }
             .days-nav { grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 100%; }
             .day-btn { font-size: 13px; padding: 8px 4px; border-radius: 30px; }
             .day-btn .day-date { font-size: 10px; }
@@ -116,6 +152,7 @@
             .days-nav { grid-template-columns: repeat(3, 1fr); gap: 4px; }
             .day-btn { font-size: 11px; padding: 6px 2px; border-radius: 20px; }
             .day-btn .day-date { font-size: 9px; }
+            .room-dropdown .room-item .r-aud { font-size: 13px; min-width: 50px; }
         }
     </style>
 </head>
@@ -196,7 +233,7 @@
             }
         }
 
-        // ---------- ПАРСИНГ С СОХРАНЕНИЕМ ВСЕХ АУДИТОРИЙ ----------
+        // ---------- ПАРСИНГ ----------
         function parseSchedule(apiData, targetDay) {
             if (!apiData || apiData.state !== 1) return [];
 
@@ -207,14 +244,21 @@
                 if (item.деньНедели === targetDay) {
                     let name = item.дисциплина || 'Без названия';
                     name = name.replace(/^(лек|пр|лаб)\s*/i, '').trim();
-                    name = name.replace(/,\s*п\/г\s*\d+/i, '').trim();
+
+                    let subgroup = '';
+                    const subgroupMatch = name.match(/,\s*п\/г\s*(\d+)/i);
+                    if (subgroupMatch) {
+                        subgroup = `п/г ${subgroupMatch[1]}`;
+                        name = name.replace(/,\s*п\/г\s*\d+/i, '').trim();
+                    }
 
                     rawLessons.push({
                         time: `${item.начало} – ${item.конец}`,
                         start: item.начало,
                         end: item.конец,
                         name: name,
-                        room: item.аудитория || ''
+                        room: item.аудитория || '',
+                        subgroup: subgroup
                     });
                 }
             });
@@ -233,23 +277,23 @@
                         start: lesson.start,
                         end: lesson.end,
                         name: lesson.name,
-                        rooms: [lesson.room]
+                        rooms: [{ room: lesson.room, subgroup: lesson.subgroup }]
                     };
                     merged.push(current);
                 } else {
-                    if (lesson.room && !current.rooms.includes(lesson.room)) {
-                        current.rooms.push(lesson.room);
+                    const exists = current.rooms.some(r => r.room === lesson.room && r.subgroup === lesson.subgroup);
+                    if (!exists && lesson.room) {
+                        current.rooms.push({ room: lesson.room, subgroup: lesson.subgroup });
                     }
                 }
             });
 
-            // Возвращаем все аудитории, а не только первую
             return merged.map(item => ({
                 time: item.time,
                 start: item.start,
                 end: item.end,
                 name: item.name,
-                rooms: item.rooms.filter(r => r && r.trim() !== '')
+                rooms: item.rooms.filter(r => r.room && r.room.trim() !== '')
             }));
         }
 
@@ -276,23 +320,29 @@
                 } else {
                     lessons.forEach((lesson, lessonIndex) => {
                         const rooms = lesson.rooms || [];
-                        const firstRoom = rooms.length > 0 ? rooms[0] : '—';
-                        const moreCount = rooms.length > 1 ? rooms.length - 1 : 0;
+                        const moreCount = rooms.length;
                         const uniqueId = `rooms-${girl.groupId}-${lessonIndex}-${Date.now()}`;
 
-                        // Список всех аудиторий (кроме первой) для скрытого блока
-                        const otherRooms = rooms.slice(1).map(r => `<span>${r}</span>`).join('');
+                        const allRoomsHtml = rooms.map(r => `
+                            <div class="room-item">
+                                <span class="r-aud">${r.room}</span>
+                                ${r.subgroup ? `<span class="r-subgroup">${r.subgroup}</span>` : ''}
+                            </div>
+                        `).join('');
 
                         scheduleHtml += `
                             <div class="lesson-row">
                                 <div class="lesson-room-wrapper">
-                                    <span class="lesson-room">${firstRoom}</span>
-                                    ${moreCount > 0 ? `
-                                        <button class="room-toggle" data-target="${uniqueId}">+${moreCount}</button>
-                                    ` : ''}
-                                    ${moreCount > 0 ? `
-                                        <div class="room-list" id="${uniqueId}">
-                                            ${otherRooms}
+                                    ${moreCount > 1 ? `
+                                        <button class="room-toggle" data-target="${uniqueId}">
+                                            Ауд. <span class="arrow">▼</span>
+                                        </button>
+                                    ` : `
+                                        <span class="lesson-room">${rooms[0]?.room || '—'}</span>
+                                    `}
+                                    ${moreCount > 1 ? `
+                                        <div class="room-dropdown" id="${uniqueId}">
+                                            ${allRoomsHtml}
                                         </div>
                                     ` : ''}
                                 </div>
@@ -315,23 +365,16 @@
 
             grid.innerHTML = html;
 
-            // ====== ОБРАБОТЧИКИ ДЛЯ КНОПОК "ещё N" ======
+            // ====== ОБРАБОТЧИК ДЛЯ КНОПОК "Ауд. ▼" ======
             document.querySelectorAll('.room-toggle').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const targetId = this.dataset.target;
                     const list = document.getElementById(targetId);
-                    if (list) {
-                        list.classList.toggle('open');
-                        this.classList.toggle('active');
-                        // Меняем текст кнопки
-                        if (list.classList.contains('open')) {
-                            this.textContent = '▲';
-                        } else {
-                            const count = parseInt(this.textContent.replace(/[^0-9]/g, '')) || 0;
-                            this.textContent = `+${count}`;
-                        }
-                    }
+                    if (!list) return;
+
+                    const isOpen = list.classList.toggle('open');
+                    this.classList.toggle('active');
                 });
             });
         }
