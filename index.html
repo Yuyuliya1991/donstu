@@ -29,7 +29,6 @@
         .girl-card:hover { border-color: rgba(255,200,0,0.15); }
         .girl-name { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
 
-        /* ===== ОСНОВНАЯ СТРОКА (горизонтально) ===== */
         .lesson-row {
             display: flex;
             justify-content: space-between;
@@ -88,7 +87,7 @@
             transform: rotate(180deg);
         }
 
-        /* ===== ВЫПАДАЮЩИЙ СПИСОК (появляется под строкой) ===== */
+        /* ===== ВЫПАДАЮЩИЙ СПИСОК С ПЕРЕНОСОМ ===== */
         .room-dropdown {
             display: none;
             width: 100%;
@@ -100,9 +99,9 @@
         }
         .room-dropdown.open {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* ← перенос на новую строку */
             align-items: flex-start;
-            gap: 4px 16px;
+            gap: 4px 16px; /* ← отступы между элементами */
         }
         .room-dropdown .room-item {
             display: inline-flex;
@@ -203,9 +202,6 @@
     </div>
 
     <script>
-        // ===================================================
-        // ВСЕ ПОДРУГИ
-        // ===================================================
         const GIRLS = [
             { name: 'Юля', groupId: 73351 },
             { name: 'Маша', groupId: 73309 },
@@ -353,7 +349,6 @@
                             </div>
                         `).join('');
 
-                        // ВСЁ В ОДНУ СТРОКУ (горизонтально)
                         scheduleHtml += `
                             <div class="lesson-row">
                                 <div class="lesson-room-wrapper">
