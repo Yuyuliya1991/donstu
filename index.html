@@ -29,24 +29,30 @@
         .girl-card:hover { border-color: rgba(255,200,0,0.15); }
         .girl-name { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
 
-        /* ===== ОСНОВНАЯ СТРОКА ПАРЫ ===== */
+        /* ===== КОНТЕЙНЕР ПАРЫ (вертикальный) ===== */
         .lesson-row {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .lesson-row:last-child { border-bottom: none; }
+
+        /* ===== ОСНОВНАЯ СТРОКА (горизонтальная) ===== */
+        .lesson-main {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            flex-wrap: wrap;
+            width: 100%;
+            gap: 8px;
         }
-        .lesson-row:last-child { border-bottom: none; }
 
         .lesson-room-wrapper {
             display: flex;
             align-items: center;
             gap: 6px;
-            min-width: 60px;
             flex-shrink: 0;
-            flex-wrap: wrap;
+            min-width: 60px;
         }
 
         .lesson-room {
@@ -88,7 +94,31 @@
             transform: rotate(180deg);
         }
 
-        /* ===== ВЕРТИКАЛЬНЫЙ СПИСОК АУДИТОРИЙ ===== */
+        .lesson-info {
+            flex: 1;
+            min-width: 0;
+            padding: 0 10px;
+        }
+        .lesson-name {
+            color: rgba(255,255,255,0.85);
+            font-size: 16px;
+            font-weight: 500;
+            word-break: normal;
+            white-space: normal;
+            overflow-wrap: normal;
+        }
+
+        .lesson-time {
+            color: #ffd93d;
+            font-weight: 700;
+            font-size: 17px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-shadow: 0 0 20px rgba(255, 217, 61, 0.25);
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== ВЕРТИКАЛЬНЫЙ СПИСОК АУДИТОРИЙ (под основной строкой) ===== */
         .room-dropdown {
             display: none;
             width: 100%;
@@ -99,7 +129,7 @@
             border-radius: 0 0 8px 8px;
         }
         .room-dropdown.open {
-            display: block; /* ← вертикальный список */
+            display: block;
         }
         .room-dropdown .room-item {
             display: flex;
@@ -122,30 +152,6 @@
             font-size: 12px;
         }
 
-        .lesson-info {
-            flex: 1;
-            min-width: 0;
-            padding: 0 14px;
-        }
-        .lesson-name {
-            color: rgba(255,255,255,0.85);
-            font-size: 16px;
-            font-weight: 500;
-            word-break: normal;
-            white-space: normal;
-            overflow-wrap: normal;
-        }
-
-        .lesson-time {
-            color: #ffd93d;
-            font-weight: 700;
-            font-size: 17px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            text-shadow: 0 0 20px rgba(255, 217, 61, 0.25);
-            letter-spacing: 0.3px;
-        }
-
         .girl-empty { color: rgba(255,255,255,0.25); text-align: center; padding: 20px 0; font-size: 14px; }
         .girl-loader { color: rgba(255,255,255,0.4); text-align: center; padding: 20px 0; font-size: 14px; }
         .girl-error { color: #ff6b6b; text-align: center; padding: 14px 0; font-size: 13px; background: rgba(255,0,0,0.06); border-radius: 12px; }
@@ -156,7 +162,8 @@
             .container { padding: 16px; }
             .header h1 { font-size: 22px; }
             .girls-grid { grid-template-columns: 1fr; }
-            .lesson-row { gap: 4px; padding: 8px 0; }
+            .lesson-row { padding: 8px 0; }
+            .lesson-main { gap: 4px; flex-wrap: wrap; }
             .lesson-room-wrapper { min-width: 50px; }
             .lesson-room { font-size: 14px; }
             .lesson-time { font-size: 15px; }
@@ -178,6 +185,7 @@
             .day-btn .day-date { font-size: 9px; }
             .room-dropdown .room-item .r-aud { font-size: 12px; min-width: 40px; }
             .room-dropdown .room-item .r-subgroup { font-size: 10px; }
+            .lesson-main { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -350,24 +358,26 @@
 
                         scheduleHtml += `
                             <div class="lesson-row">
-                                <div class="lesson-room-wrapper">
-                                    ${moreCount > 1 ? `
-                                        <button class="room-toggle" data-target="${uniqueId}">
-                                            Ауд. <span class="arrow">▼</span>
-                                        </button>
-                                    ` : `
-                                        <span class="lesson-room">${rooms[0]?.room || '—'}</span>
-                                    `}
-                                    ${moreCount > 1 ? `
-                                        <div class="room-dropdown" id="${uniqueId}">
-                                            ${allRoomsHtml}
-                                        </div>
-                                    ` : ''}
+                                <div class="lesson-main">
+                                    <div class="lesson-room-wrapper">
+                                        ${moreCount > 1 ? `
+                                            <button class="room-toggle" data-target="${uniqueId}">
+                                                Ауд. <span class="arrow">▼</span>
+                                            </button>
+                                        ` : `
+                                            <span class="lesson-room">${rooms[0]?.room || '—'}</span>
+                                        `}
+                                    </div>
+                                    <div class="lesson-info">
+                                        <div class="lesson-name">${lesson.name}</div>
+                                    </div>
+                                    <div class="lesson-time">${lesson.time}</div>
                                 </div>
-                                <div class="lesson-info">
-                                    <div class="lesson-name">${lesson.name}</div>
-                                </div>
-                                <div class="lesson-time">${lesson.time}</div>
+                                ${moreCount > 1 ? `
+                                    <div class="room-dropdown" id="${uniqueId}">
+                                        ${allRoomsHtml}
+                                    </div>
+                                ` : ''}
                             </div>
                         `;
                     });
