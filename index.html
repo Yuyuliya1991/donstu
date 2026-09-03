@@ -87,7 +87,7 @@
             transform: rotate(180deg);
         }
 
-        /* ===== ВЫПАДАЮЩИЙ СПИСОК С ПЕРЕНОСОМ ===== */
+        /* ===== ИСПРАВЛЕННЫЙ ВЫПАДАЮЩИЙ СПИСОК ===== */
         .room-dropdown {
             display: none;
             width: 100%;
@@ -101,7 +101,7 @@
             display: flex;
             flex-wrap: wrap; /* ← перенос на новую строку */
             align-items: flex-start;
-            gap: 4px 16px; /* ← отступы между элементами */
+            gap: 4px 16px;
         }
         .room-dropdown .room-item {
             display: inline-flex;
@@ -133,7 +133,7 @@
             font-weight: 500;
             word-break: normal;
             white-space: normal;
-            overflow-wrap: break-word;
+            overflow-wrap: normal;
         }
 
         .lesson-time {
